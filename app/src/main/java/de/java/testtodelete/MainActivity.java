@@ -2,7 +2,10 @@ package de.java.testtodelete;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -17,12 +20,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import data.DBHelper;
+
 public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemLongClickListener{
+    public static final String COMPANY_NAME = "company_name";
     private ListView listView;
     private EditText editText;
     private Button button;
     private ArrayAdapter<String> adapter;
     private Animation animation;
+    private DBHelper dbHelper;
+    private SQLiteDatabase db;
+    private ContentValues cv;
+    private Cursor c;
 
     private List<String> list = new ArrayList<>();
 
@@ -31,7 +41,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         listView = (ListView) findViewById(R.id.listView);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
