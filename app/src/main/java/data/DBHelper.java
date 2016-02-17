@@ -8,19 +8,15 @@ public class DBHelper extends SQLiteOpenHelper {
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
-    public static final String TABLE_MYTABLE = "myTable";
-    private static final String COLUMN_ID = "_id";
-    public static final String COLUMN_COMPANY_NAME = "companyName";
-    private static final String DATABASE_MYTABLE = "CREATE TABLE "
-            + TABLE_MYTABLE + " (" + COLUMN_ID + " integer primary key autoincrement, "
-            + COLUMN_COMPANY_NAME + " text);";
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         try {
-            db.execSQL(DATABASE_MYTABLE);
+            db.execSQL("create table myTable ("
+            + "id integer primary key autoincrement, "
+            + "name text"
+            + ");");
             db.setTransactionSuccessful();
         }catch (Exception e) {
             e.printStackTrace();
@@ -31,7 +27,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MYTABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + "myTable");
         onCreate(db);
     }
 }
