@@ -8,10 +8,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
-    private static final String TABLE_MYTABLE = "myTable";
-    public static final String COLUMN_ID = "_id";
+    public static final String TABLE_MYTABLE = "myTable";
+    private static final String COLUMN_ID = "_id";
     public static final String COLUMN_COMPANY_NAME = "companyName";
-    public static final String DATABASE_MYTABLE = "CREATE TABLE "
+    private static final String DATABASE_MYTABLE = "CREATE TABLE "
             + TABLE_MYTABLE + " (" + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_COMPANY_NAME + " text);";
 
