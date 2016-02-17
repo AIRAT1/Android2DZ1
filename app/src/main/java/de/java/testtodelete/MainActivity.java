@@ -23,7 +23,7 @@ import java.util.List;
 import data.DBHelper;
 
 public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemLongClickListener{
-    public static final String COMPANY_NAME = "company_name";
+    public static final String LOG = "LOG";
     private ListView listView;
     private EditText editText;
     private Button button;
@@ -34,12 +34,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     private ContentValues cv;
     private Cursor c;
 
-    private List<String> list = new ArrayList<>();
+    private List<String> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        dbHelper = new DBHelper(this, "myTable", null, 1);
+        load();
         listView = (ListView) findViewById(R.id.listView);
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
@@ -88,5 +91,31 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                     }
                 }).create().show();
         return true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        save();
+    }
+
+    private void save() {
+        db = dbHelper.getWritableDatabase();
+        db.delete("myTable", null, null);
+        cv = new ContentValues();
+        for (String s : list) {
+            cv.put("name", s);
+            db.insert("myTable", null, cv);
+        }
+    }
+    private List<String> load() {
+        db = dbHelper.getWritableDatabase();
+        c = db.query("myTable", null,
+                null, null, null, null, null);
+        list = new ArrayList<>();
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            list.add(c.getString(c.getColumnIndex("name")));
+        }
+        return list;
     }
 }
