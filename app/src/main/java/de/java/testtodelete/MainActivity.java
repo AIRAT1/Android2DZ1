@@ -106,6 +106,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         for (String s : list) {
             cv.put("name", s);
             db.insert("myTable", null, cv);
+            
         }
     }
     private List<String> load() {
