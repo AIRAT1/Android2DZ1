@@ -5,6 +5,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
+    public static final String TABLE_NAME = "myTable";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_NAME = "name";
+    public static final String SCRIPT = "create table " + TABLE_NAME + " ("
+            + COLUMN_ID + " integer primary key autoincrement, "
+            + COLUMN_NAME + " text"
+            + ");";
+
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
@@ -13,10 +21,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         try {
-            db.execSQL("create table myTable ("
-            + "id integer primary key autoincrement, "
-            + "name text"
-            + ");");
+            db.execSQL(SCRIPT);
             db.setTransactionSuccessful();
         }catch (Exception e) {
             e.printStackTrace();
@@ -27,7 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + "myTable");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
 }
