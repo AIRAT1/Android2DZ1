@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
+    public static final String DB_NAME = "dbName";
     public static final String TABLE_NAME = "myTable";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
