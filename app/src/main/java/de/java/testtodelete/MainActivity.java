@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import data.DBHelper;
 
 public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemLongClickListener{
     public static final String LOG = "LOG";
+    public static final String COMPANY_NAME = "company_name";
     private ListView listView;
     private EditText editText;
     private Button button;
@@ -32,41 +34,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     private DBHelper dbHelper;
     private SQLiteDatabase db;
     private ContentValues cv;
-    private Cursor c;
+    private Cursor cursor;
 
     private List<String> list;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-
-        dbHelper = new DBHelper(this, "myTable", null, 1);
-        load();
-        listView = (ListView) findViewById(R.id.listView);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, String.valueOf(parent.getAdapter().getItem(position)), Toast.LENGTH_SHORT).show();
-            }
-        });
-        listView.setOnItemLongClickListener(this);
-        editText = (EditText) findViewById(R.id.editText);
-        button = (Button)findViewById(R.id.button);
-        button.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
-        button.setBackgroundColor(getResources().getColor(R.color.green));
-        button.startAnimation(animation);
-        list.add(0, editText.getText().toString());
-        adapter.notifyDataSetChanged();
-        editText.setText("");
-    }
 
     @Override
     public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
@@ -94,6 +64,41 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     }
 
     @Override
+    public void onClick(View v) {
+        animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
+        button.setBackgroundColor(getResources().getColor(R.color.green));
+        button.startAnimation(animation);
+        list.add(0, editText.getText().toString());
+        adapter.notifyDataSetChanged();
+        editText.setText("");
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main_activity);
+
+        load();
+        listView = (ListView) findViewById(R.id.listView);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(MainActivity.this, String.valueOf(parent.getAdapter().getItem(position))
+                        + " is selected", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                intent.putExtra(COMPANY_NAME, String.valueOf(parent.getAdapter().getItem(position)));
+                startActivity(intent);
+            }
+        });
+        listView.setOnItemLongClickListener(this);
+        editText = (EditText) findViewById(R.id.editText);
+        button = (Button)findViewById(R.id.button);
+        button.setOnClickListener(this);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         save();
@@ -101,21 +106,22 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
     private void save() {
         db = dbHelper.getWritableDatabase();
-        db.delete("myTable", null, null);
+        db.delete(DBHelper.TABLE_NAME, null, null);
         cv = new ContentValues();
         for (String s : list) {
-            cv.put("name", s);
-            db.insert("myTable", null, cv);
+            cv.put(DBHelper.COLUMN_NAME, s);
+            db.insert(DBHelper.TABLE_NAME, null, cv);
             
         }
     }
     private List<String> load() {
+        dbHelper = new DBHelper(this, DBHelper.DB_NAME, null, 1);
         db = dbHelper.getWritableDatabase();
-        c = db.query("myTable", null,
+        cursor = db.query(DBHelper.TABLE_NAME, null,
                 null, null, null, null, null);
         list = new ArrayList<>();
-        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            list.add(c.getString(c.getColumnIndex("name")));
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            list.add(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_NAME)));
         }
         return list;
     }
