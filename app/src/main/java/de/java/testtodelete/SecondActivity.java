@@ -22,7 +22,7 @@ import java.util.List;
 
 import data.DBHelper;
 
-public class SecondActivity extends Activity implements AdapterView.OnItemLongClickListener{
+public class SecondActivity extends Activity implements View.OnClickListener,AdapterView.OnItemLongClickListener{
     private EditText editText;
     private LinearLayout linearLayoutRoot;
     private Button button;
@@ -32,7 +32,7 @@ public class SecondActivity extends Activity implements AdapterView.OnItemLongCl
     private ArrayAdapter<String> adapter;
     private String companyName;
 
-    private DBHelper dbHelper;
+    static DBHelper dbHelper;
     static SQLiteDatabase db;
     private ContentValues cv;
     private Cursor cursor;
@@ -41,17 +41,7 @@ public class SecondActivity extends Activity implements AdapterView.OnItemLongCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         init();
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animation = AnimationUtils.loadAnimation(SecondActivity.this, R.anim.rotate);
-                button.setBackgroundColor(getResources().getColor(R.color.green));
-                button.setAnimation(animation);
-                list.add(0, editText.getText().toString());
-                adapter.notifyDataSetChanged();
-                editText.setText("");
-            }
-        });
+        button.setOnClickListener(this);
     }
     void init() {
         editText = (EditText)findViewById(R.id.editText);
@@ -84,8 +74,9 @@ public class SecondActivity extends Activity implements AdapterView.OnItemLongCl
         for (String s : list) {
             cv.put(DBHelper.COLUMN_NAME, s);
             db.insert(DBHelper.TABLE_NAME, null, cv);
-
         }
+        db.close();
+        cv.clear();
     }
     private List<String> load() {
         dbHelper = new DBHelper(this, DBHelper.DB_NAME + companyName, null, 1);
@@ -96,7 +87,19 @@ public class SecondActivity extends Activity implements AdapterView.OnItemLongCl
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             list.add(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_NAME)));
         }
+        db.close();
+        cursor.close();
         return list;
+    }
+
+    @Override
+    public void onClick(View v) {
+        animation = AnimationUtils.loadAnimation(SecondActivity.this, R.anim.rotate);
+        button.setBackgroundColor(getResources().getColor(R.color.green));
+        button.setAnimation(animation);
+        list.add(0, editText.getText().toString());
+        adapter.notifyDataSetChanged();
+        editText.setText("");
     }
 
     @Override

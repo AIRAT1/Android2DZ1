@@ -39,44 +39,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     private List<String> list;
 
     @Override
-    public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete")
-                .setMessage("Are you really wont to delete this?")
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
-                        button.setBackgroundColor(getResources().getColor(R.color.red));
-                        button.startAnimation(animation);
-                        adapter.remove(parent.getItemAtPosition(position).toString());
-                        adapter.notifyDataSetChanged();
-
-                        SecondActivity.db.delete(DBHelper.TABLE_NAME, null, null);
-
-                        if (list.size() == 0) button.setBackgroundColor(getResources().getColor(R.color.base_color));
-                    }
-                }).create().show();
-        return true;
-    }
-
-    @Override
-    public void onClick(View v) {
-        animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
-        button.setBackgroundColor(getResources().getColor(R.color.green));
-        button.startAnimation(animation);
-        list.add(0, editText.getText().toString());
-        adapter.notifyDataSetChanged();
-        editText.setText("");
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
@@ -114,9 +76,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         for (String s : list) {
             cv.put(DBHelper.COLUMN_NAME, s);
             db.insert(DBHelper.TABLE_NAME, null, cv);
-            
         }
+        db.close();
+        cv.clear();
     }
+
     private List<String> load() {
         dbHelper = new DBHelper(this, DBHelper.DB_NAME, null, 1);
         db = dbHelper.getWritableDatabase();
@@ -126,6 +90,48 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             list.add(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_NAME)));
         }
+        db.close();
+        cursor.close();
         return list;
+    }
+
+    @Override
+    public void onClick(View v) {
+        animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
+        button.setBackgroundColor(getResources().getColor(R.color.green));
+        button.startAnimation(animation);
+        list.add(0, editText.getText().toString());
+        adapter.notifyDataSetChanged();
+        editText.setText("");
+    }
+    @Override
+    public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete")
+                .setMessage("Are you really wont to delete this?")
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
+                        button.setBackgroundColor(getResources().getColor(R.color.red));
+                        button.startAnimation(animation);
+                        adapter.remove(parent.getItemAtPosition(position).toString());
+                        adapter.notifyDataSetChanged();
+
+                        if (SecondActivity.db != null) {
+                            SecondActivity.db = SecondActivity.dbHelper.getWritableDatabase();
+                            SecondActivity.db.delete(DBHelper.TABLE_NAME, null, null);
+                        }
+
+                        if (list.size() == 0) button.setBackgroundColor(getResources().getColor(R.color.base_color));
+                    }
+                }).create().show();
+        return true;
     }
 }
