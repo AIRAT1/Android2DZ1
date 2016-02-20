@@ -57,6 +57,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
                         button.startAnimation(animation);
                         adapter.remove(parent.getItemAtPosition(position).toString());
                         adapter.notifyDataSetChanged();
+
+                        SecondActivity.db.delete(DBHelper.TABLE_NAME, null, null);
+
                         if (list.size() == 0) button.setBackgroundColor(getResources().getColor(R.color.base_color));
                     }
                 }).create().show();

@@ -2,7 +2,10 @@ package de.java.testtodelete;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -17,6 +20,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import data.DBHelper;
+
 public class SecondActivity extends Activity implements AdapterView.OnItemLongClickListener{
     private EditText editText;
     private LinearLayout linearLayoutRoot;
@@ -25,6 +30,12 @@ public class SecondActivity extends Activity implements AdapterView.OnItemLongCl
     private List<String> list;
     private Animation animation;
     private ArrayAdapter<String> adapter;
+    private String companyName;
+
+    private DBHelper dbHelper;
+    static SQLiteDatabase db;
+    private ContentValues cv;
+    private Cursor cursor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +55,7 @@ public class SecondActivity extends Activity implements AdapterView.OnItemLongCl
     }
     void init() {
         editText = (EditText)findViewById(R.id.editText);
-        String companyName = getIntent().getStringExtra(MainActivity.COMPANY_NAME);
+        companyName = getIntent().getStringExtra(MainActivity.COMPANY_NAME);
         editText.setHint(getResources().getString(R.string.enter_person_name) + " "
                 + companyName + " here.");
         linearLayoutRoot = (LinearLayout)findViewById(R.id.linearLayoutRoot);
@@ -53,12 +64,39 @@ public class SecondActivity extends Activity implements AdapterView.OnItemLongCl
         listView = (ListView)findViewById(R.id.listView);
         listView.setBackgroundColor(getResources().getColor(R.color.linearLayoutRoot));
         button = (Button)findViewById(R.id.button);
-
-        list = new ArrayList<>();
+        load();
 
         adapter = new ArrayAdapter<>(SecondActivity.this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
         listView.setOnItemLongClickListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        save();
+    }
+
+    private void save() {
+        db = dbHelper.getWritableDatabase();
+        db.delete(DBHelper.TABLE_NAME, null, null);
+        cv = new ContentValues();
+        for (String s : list) {
+            cv.put(DBHelper.COLUMN_NAME, s);
+            db.insert(DBHelper.TABLE_NAME, null, cv);
+
+        }
+    }
+    private List<String> load() {
+        dbHelper = new DBHelper(this, DBHelper.DB_NAME + companyName, null, 1);
+        db = dbHelper.getWritableDatabase();
+        cursor = db.query(DBHelper.TABLE_NAME, null,
+                null, null, null, null, null);
+        list = new ArrayList<>();
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            list.add(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_NAME)));
+        }
+        return list;
     }
 
     @Override
