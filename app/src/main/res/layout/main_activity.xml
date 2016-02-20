@@ -5,18 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/linearLayoutRoot"
     android:background="#40ffd919"
     tools:context=".MainActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/LinearLayout1"
+        android:id="@+id/linearLayout1"
         android:background="#77000000">
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Enter a new company name here"
+            android:textColorHint="#000"
             android:gravity="center"
             android:id="@+id/editText"
             android:layout_margin="20dp"
