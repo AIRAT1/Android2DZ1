@@ -46,8 +46,8 @@ public class SecondActivity extends Activity implements View.OnClickListener,Ada
     void init() {
         editText = (EditText)findViewById(R.id.editText);
         companyName = getIntent().getStringExtra(MainActivity.COMPANY_NAME);
-        editText.setHint(getResources().getString(R.string.enter_person_name) + " "
-                + companyName + " here.");
+        editText.setHint(getResources().getString(R.string.enter_person_from) + " "
+                + companyName + " " + getString(R.string.here));
         linearLayoutRoot = (LinearLayout)findViewById(R.id.linearLayoutRoot);
         linearLayoutRoot.setBackgroundColor(getResources().getColor(R.color.linearLayoutRoot));
         editText.setBackgroundColor(getResources().getColor(R.color.linearLayoutRoot));
@@ -105,15 +105,15 @@ public class SecondActivity extends Activity implements View.OnClickListener,Ada
     @Override
     public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete")
-                .setMessage("Are you really wont to delete this?")
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.delete)
+                .setMessage(R.string.are_you_really_want_to_delete_this)
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 })
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);

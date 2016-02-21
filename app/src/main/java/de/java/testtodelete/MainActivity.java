@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(MainActivity.this, String.valueOf(parent.getAdapter().getItem(position))
-                        + " is selected", Toast.LENGTH_SHORT).show();
+                        + " " + getString(R.string.is_selected), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, SecondActivity.class);
                 intent.putExtra(COMPANY_NAME, String.valueOf(parent.getAdapter().getItem(position)));
                 startActivity(intent);
@@ -107,15 +107,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     @Override
     public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete")
-                .setMessage("Are you really wont to delete this?")
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.delete)
+                .setMessage(R.string.are_you_really_want_to_delete_this)
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 })
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
